@@ -1,10 +1,12 @@
-import { UserButton } from "@clerk/nextjs";
-import Image from "next/image";
+import Features from "@/components/Features";
+import LandingPage from "@/components/Landing";
 
 export default function Home() {
   return (
     <main>
-      <UserButton/>
+      <LandingPage/>
+      <Features/>
+
     </main>
    
   );
