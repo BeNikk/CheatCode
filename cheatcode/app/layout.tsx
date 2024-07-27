@@ -4,6 +4,8 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "@/components/shared/Navbar";
 import { cn } from "@/lib/utils";
+import  { Toaster } from 'react-hot-toast';
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +23,9 @@ export default function RootLayout({
     <ClerkProvider>
 
     <html lang="en">
+
       <body className={cn(inter.className,"bg-slate-100")}>
+    <Toaster />
         <div>
           <Navbar/>
         </div>

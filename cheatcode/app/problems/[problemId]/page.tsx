@@ -1,3 +1,4 @@
+import CodePage from "@/components/Code";
 import CodeEditorWindow from "@/components/CodeEditor";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
@@ -16,8 +17,6 @@ const ProblemIdPage = async({params}:{params:{problemId:number}}) => {
         }
     })
     const testCasesArray:any= Array.isArray(problem?.testCases) ? problem.testCases : [];
-
-
 ;
           return ( 
         <div className="mx-16 flex flex-col lg:flex-row items-start justify-around mt-16">
@@ -56,7 +55,7 @@ const ProblemIdPage = async({params}:{params:{problemId:number}}) => {
               </div>
             </div>
             <div>
-                <CodeEditorWindow  />
+              <CodePage/>
 
             </div>
 
@@ -65,18 +64,3 @@ const ProblemIdPage = async({params}:{params:{problemId:number}}) => {
 }
  
 export default ProblemIdPage;
-interface TestCase {
-    input: number[];
-    output: number[];
-    target?: number;
-  }
-  
-function TestCase({ testCase }:{testCase:TestCase}) {
-    return (
-        <div className="test-case">
-      <p className="text-black">Input: {JSON.stringify(testCase.input)}</p>
-      <p>Output: {JSON.stringify(testCase.output)}</p>
-      {testCase.target !== undefined && <p>Target: {testCase.target}</p>}
-    </div>
-    );
-  }
