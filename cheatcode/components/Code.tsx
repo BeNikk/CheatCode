@@ -14,6 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import Loader from "./Loader";
+import Spinner from "./Loader";
 
 const CodePage = ({ problem }: any) => {
     const [code, setCode] = useState("");
@@ -62,10 +64,10 @@ const CodePage = ({ problem }: any) => {
            
             const response = await axios.post("/api/chat", { prompt });
             const { codeEvaluation } = response.data;
-            console.log(codeEvaluation);
             setData(codeEvaluation);
             setIsModalOpen(true);
         } catch (error) {
+          setLoading(false);
             console.log(error);
             toast.error("Some error occurred");
         } finally {
@@ -75,6 +77,11 @@ const CodePage = ({ problem }: any) => {
 
     return (
         <div>
+          {loading && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <Spinner />
+        </div>
+          )}
             <div className="flex flex-row items-center gap-6">  
                 <LanguageDropdown onSelectChange={onSelectChange} />
                 <div>
@@ -107,53 +114,74 @@ const CodePage = ({ problem }: any) => {
 export default CodePage;
 
 
-function ModalOpen({isOpen,data,onClose}:{isOpen:Boolean,data:any,onClose:any}){
-  const {presentCodeCorrectorNotBoolean,reasonWhyCurrentCodeIsIncorrectOrCorrectDescriptive,edgeCaseCheck, betterSolutionIfany, hintsAndTheirReason, topicsToLearnDescriptive, }=data;
-  if(!isOpen){
-    return
-    
+function ModalOpen({ isOpen, data, onClose }: { isOpen: boolean; data: any; onClose: () => void }) {
+  const {
+    presentCodeCorrectorNotBoolean,
+    reasonWhyCurrentCodeIsIncorrectOrCorrectDescriptive,
+    edgeCaseCheck,
+    betterSolutionIfany,
+    hintsAndTheirReason,
+    topicsToLearnDescriptive,
+  } = data;
+
+  if (!isOpen) {
+    return null; // Return null if the modal is not open
   }
 
-    return (
-        <>
-          <div className="fixed inset-0  bg-opacity-50 backdrop-blur-sm z-50" />
-          
+  return (
+    <>
+      {/* Overlay with blur effect */}
+      <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50" />
 
-    
-          <div className="fixed inset-0 flex items-center justify-center z-50">
-            
-            <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-lg">
-            <Card>
+      {/* Modal content */}
+      <div className="fixed inset-0 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-lg max-h-[calc(100vh-4rem)] overflow-auto">
+          <Card>
             <CardHeader>
-            <CardTitle className="text-[#3B5998]">Personalized solution Check</CardTitle>
-            <CardDescription>
-              <p className="text-lg font-medium text-black"><span className="text-[#3B5998]">Is Your Present code correct? </span> <br /><span>{presentCodeCorrectorNotBoolean}</span></p>
-             
-            </CardDescription>
+              <CardTitle className="text-[#3B5998]">Personalized Solution Check</CardTitle>
+              <CardDescription>
+                <p className="text-lg font-medium text-black">
+                  <span className="text-[#3B5998]">Is Your Present Code Correct? </span>
+                  <br />
+                  <span>{presentCodeCorrectorNotBoolean}</span>
+                </p>
+              </CardDescription>
             </CardHeader>
             <CardContent>
-            <p className="text-lg font-medium text-black"><span className="text-[#3B5998]">Reason</span><br />{reasonWhyCurrentCodeIsIncorrectOrCorrectDescriptive}</p>
-            <p className="text-lg font-medium text-black"><span className="text-[#3B5998]">Edge cases check- </span><br /> {edgeCaseCheck}</p>
-            <p className="text-lg font-medium text-black"><span className="text-[#3B5998]">Hints- </span><br /> {hintsAndTheirReason}</p>
-            <p className="text-lg font-medium text-black"><span className="text-[#3B5998]">Topics to focus on</span> <br />{topicsToLearnDescriptive}</p>
-            <p className="text-lg font-medium text-black"><span className="text-[#3B5998]">Better solution if any</span> <br />{betterSolutionIfany}</p>
-
-          
+              <p className="text-lg font-medium text-black">
+                <span className="text-[#3B5998]">Reason</span>
+                <br />
+                {reasonWhyCurrentCodeIsIncorrectOrCorrectDescriptive}
+              </p>
+              <p className="text-lg font-medium text-black">
+                <span className="text-[#3B5998]">Edge Cases Check- </span>
+                <br /> {edgeCaseCheck}
+              </p>
+              <p className="text-lg font-medium text-black">
+                <span className="text-[#3B5998]">Hints- </span>
+                <br /> {hintsAndTheirReason}
+              </p>
+              <p className="text-lg font-medium text-black">
+                <span className="text-[#3B5998]">Topics to Focus On</span>
+                <br />
+                {topicsToLearnDescriptive}
+              </p>
+              <p className="text-lg font-medium text-black">
+                <span className="text-[#3B5998]">Better Solution If Any</span>
+                <br />
+                { betterSolutionIfany}
+              </p>
             </CardContent>
             <CardFooter>
-              <Button   onClick={onClose} className="bg-[#3B5998] ">
+              <Button onClick={onClose} className="bg-[#3B5998]">
                 Close
               </Button>
-             
-          </CardFooter>
+            </CardFooter>
           </Card>
-            
-            </div>
-          </div>
-        </>
-      );
-    };
-    
-
+        </div>
+      </div>
+    </>
+  );
+}
 
  

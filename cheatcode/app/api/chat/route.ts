@@ -29,7 +29,6 @@ export async function POST(req:Request){
             }),
             prompt: prompt,
           });
-          console.log(object);
 
           return  NextResponse.json(object);
         
