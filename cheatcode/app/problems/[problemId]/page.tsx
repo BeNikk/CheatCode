@@ -15,7 +15,8 @@ const ProblemIdPage = async({params}:{params:{problemId:number}}) => {
             id:Number(params.problemId)
         }
     })
-    const testCases = typeof problem?.testCases === 'string' ? JSON.parse(problem.testCases) : [];
+    const testCasesArray:any= Array.isArray(problem?.testCases) ? problem.testCases : [];
+
 
 ;
           return ( 
@@ -28,16 +29,31 @@ const ProblemIdPage = async({params}:{params:{problemId:number}}) => {
                 <div>
                     <p className="text-lg font-semibold">{problem?.description}</p>
                 </div>
-                <div>
-                     <h3>Test Cases</h3>
-            <div className="test-cases">
-            {testCases.map((testCase:any, index:number) => (
-             <TestCase key={index} testCase={testCase} />
-        ))}
-      </div>
-                    
-                </div>
-
+               
+                <div className=" flex flex-col gap-4">
+                {testCasesArray.map((cases:any, index:any) => {
+                  if (cases === null) return;
+                  const { input, output, target } = cases;
+                  return (
+                    <div key={index} className="flex flex-col gap-2">
+                      <div className="flex justify-between">
+                        <span className="font-bold">Input:</span>
+                        <pre className="flex-grow bg-gray-100 p-2 -mt-1 rounded">{JSON.stringify(input)}</pre>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-bold">Output:</span>
+                        <pre className="flex-grow bg-gray-100 p-2 -mt-1 rounded">{JSON.stringify(output)}</pre>
+                      </div>
+                      {target !== undefined && (
+                        <div className="">
+                          <span className="font-bold ">Target:</span>
+                          <span className="m-2 p-2">{target}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
             <div>
                 <CodeEditorWindow  />
