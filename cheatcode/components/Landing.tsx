@@ -17,9 +17,9 @@ const LandingPage = () => {
                     </p>
                 </div>
                 <div className="pt-16 flex flex-row gap-2">
-                    <Link href={'/learn'}>
+                    <Link href={'https://github.com/BeNikk/CheatCode'}>
                     <Button variant={'outline'}>
-                        Learn
+                        Give me a Star
                     </Button>
                     </Link>
                     <Link href={'/problems'}>

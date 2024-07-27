@@ -6,122 +6,154 @@ import toast from "react-hot-toast";
 import { languageOptions } from "./constants/languageOptions";
 import LanguageDropdown from "./languageDropdown";
 import { Button } from "./ui/button";
-import dotenv from 'dotenv';
-dotenv.config();
-const CodePage = () => {
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+
+const CodePage = ({ problem }: any) => {
     const [code, setCode] = useState("");
-    const [customInput, setCustomInput] = useState("");
-    const [outputDetails, setOutputDetails] = useState(null);
-    const [processing, setProcessing] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [language, setLanguage] = useState(languageOptions[0]);
-    const judge0ApiKey = process.env.REACT_APP_RAPID_API_KEY;
-    const checkStatus = async (submissionToken: string) => {
-      try {
-        const response = await axios.get(
-          `https://judge0-ce.p.rapidapi.com/submissions/${submissionToken}/`,
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              'X-RapidAPI-Key':judge0ApiKey,
-              'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com',
-            },
-          }
-        );
-  
-        const statusId = response.data.status?.id;
-  
-        if (statusId === 1 || statusId === 2) {
-          setTimeout(() => {
-            checkStatus(submissionToken);
-          }, 2000);
-        
-        } else {
-          if (statusId === 3) { 
-            const outputData = response.data; 
-            toast.success("Compiled"); 
-          } else {
-            toast.error("Compilation failed");
-          }
-        }
-      } catch (error) {
-        console.error('Error checking status:', error);
-        toast.error("something went wrong");
-      }
-    };
-  
+    const [data, setData] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const onSelectChange = (sl:any) => {
-        console.log("selected Option...", sl);
+    const handleCloseModal = () => {
+      setIsModalOpen(false);
+  };
+
+    const onSelectChange = (sl: any) => {
         setLanguage(sl);
-      };
-      
-    useEffect(()=>{
-      console.log("selected language",language)
-    },[language])
+    };
 
-    const onChange = (action:any, data:any) => {
+    
+
+    const onChange = (action: any, data: any) => {
         switch (action) {
-          case "code": {
-            setCode(data);
-            console.log(data);
-            break;
-          }
-          default: {
-            console.warn("case not handled!", action, data);
-          }
-        }
-      };
-      async function handleCompile(){
-        try {
-            const codeSent=btoa(code);
-            const languageSent=language.id
-            
-
-          
-          const response = await axios.post(
-            'https://judge0-ce.p.rapidapi.com/submissions/',
-            {
-              language_id: languageSent,
-              source_code: codeSent,
-            },
-            {
-              headers: {
-                'Content-Type': 'application/json',
-                'X-RapidAPI-Key': judge0ApiKey,
-                'X-RapidAPI-Host': 'judge0-ce.p.rapidapi.com',
-              },
+            case "code": {
+                setCode(data);
+                break;
             }
-          );
-          const submissionToken = response.data.token;  
-          checkStatus(submissionToken);
-          
-        } catch (error) {
-          console.log("error",error);
-          toast.error("Something went wrong");
-          
+            default: {
+                console.warn("case not handled!", action, data);
+            }
         }
-      }
-      
+    };
 
-    return ( 
+    async function handleCompile() {
+        try {
+            setLoading(true);
+            const prompt = `
+            You are a code review assistant. Analyze the following code based on the given problem description.
+            
+            Problem Description: ${problem.description}
+            
+            User Code:
+            ${code}
+            
+            Provide feedback on the code, where the user's solution is lagging, suggest optimizations, and indicate if the code solves the problem correctly.
+            If the solution is correct,appreciate the candidate
+            Please do not give a solution and only give hints towards the most optimal solution.Treat the user as a student of yours willing to learn.
+            `;
+           
+            const response = await axios.post("/api/chat", { prompt });
+            const { codeEvaluation } = response.data;
+            console.log(codeEvaluation);
+            setData(codeEvaluation);
+            setIsModalOpen(true);
+        } catch (error) {
+            console.log(error);
+            toast.error("Some error occurred");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    return (
         <div>
-          
             <div className="flex flex-row items-center gap-6">  
-                <LanguageDropdown onSelectChange={onSelectChange}/>
+                <LanguageDropdown onSelectChange={onSelectChange} />
                 <div>
-                    <Button variant={'outline'} className="bg-slate-300" onClick={handleCompile}>Submit</Button>
+                    <Button variant={'outline'} className="bg-slate-300" disabled={loading} onClick={handleCompile}>
+                        Submit
+                    </Button>
                 </div>
             </div>
             <div>
-            <CodeEditorWindow 
-            code={code}
-            onChange={onChange}
-            language={language?.value}
-            />
-            </div>
+                <CodeEditorWindow 
+                    code={code}
+                    onChange={onChange}
+                    language={language?.value}
+                />
+                {data==null && (<></>)}
+              {data!=null && (
+                <ModalOpen 
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                data={data}/>
 
+              )}
+               
+
+            </div>
         </div>
-     );
-}
- 
+    );
+};
+
 export default CodePage;
+
+
+function ModalOpen({isOpen,data,onClose}:{isOpen:Boolean,data:any,onClose:any}){
+  const {presentCodeCorrectorNotBoolean,reasonWhyCurrentCodeIsIncorrectOrCorrectDescriptive,edgeCaseCheck, betterSolutionIfany, hintsAndTheirReason, topicsToLearnDescriptive, }=data;
+  if(!isOpen){
+    return
+    
+  }
+
+    return (
+        <>
+          <div className="fixed inset-0  bg-opacity-50 backdrop-blur-sm z-50" />
+          
+
+    
+          <div className="fixed inset-0 flex items-center justify-center z-50">
+            
+            <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-lg">
+            <Card>
+            <CardHeader>
+            <CardTitle className="text-[#3B5998]">Personalized solution Check</CardTitle>
+            <CardDescription>
+              <p className="text-lg font-medium text-black"><span className="text-[#3B5998]">Is Your Present code correct? </span> <br /><span>{presentCodeCorrectorNotBoolean}</span></p>
+             
+            </CardDescription>
+            </CardHeader>
+            <CardContent>
+            <p className="text-lg font-medium text-black"><span className="text-[#3B5998]">Reason</span><br />{reasonWhyCurrentCodeIsIncorrectOrCorrectDescriptive}</p>
+            <p className="text-lg font-medium text-black"><span className="text-[#3B5998]">Edge cases check- </span><br /> {edgeCaseCheck}</p>
+            <p className="text-lg font-medium text-black"><span className="text-[#3B5998]">Hints- </span><br /> {hintsAndTheirReason}</p>
+            <p className="text-lg font-medium text-black"><span className="text-[#3B5998]">Topics to focus on</span> <br />{topicsToLearnDescriptive}</p>
+            <p className="text-lg font-medium text-black"><span className="text-[#3B5998]">Better solution if any</span> <br />{betterSolutionIfany}</p>
+
+          
+            </CardContent>
+            <CardFooter>
+              <Button   onClick={onClose} className="bg-[#3B5998] ">
+                Close
+              </Button>
+             
+          </CardFooter>
+          </Card>
+            
+            </div>
+          </div>
+        </>
+      );
+    };
+    
+
+
+ 

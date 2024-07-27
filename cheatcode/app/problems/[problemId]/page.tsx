@@ -55,7 +55,7 @@ const ProblemIdPage = async({params}:{params:{problemId:number}}) => {
               </div>
             </div>
             <div>
-              <CodePage/>
+              <CodePage problem={problem}/>
 
             </div>
 
