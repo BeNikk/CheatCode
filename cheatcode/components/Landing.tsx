@@ -18,7 +18,7 @@ const LandingPage = () => {
           <p className="text-4xl font-bold text-[#3B5998]">CheatCode</p>
         </div>
         <div className="">
-          <p className="text-md font-medium text-gray-700">
+          <p className="pl-2 text-md font-medium text-gray-700">
             Level up your coding skills with CheatCode.
             <br />
             Get expert advice, personalised feedbacks and much more
