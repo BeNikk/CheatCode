@@ -5,6 +5,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "@/components/shared/Navbar";
 import { cn } from "@/lib/utils";
 import  { Toaster } from 'react-hot-toast';
+import { Analytics } from '@vercel/analytics/react';
 
 
 const inter = Inter({ subsets: ["latin"] });
@@ -25,6 +26,7 @@ export default function RootLayout({
     <html lang="en">
 
       <body className={cn(inter.className,"bg-slate-100")}>
+        <Analytics/>
     <Toaster />
         <div>
           <Navbar/>
