@@ -14,8 +14,8 @@ const LandingPage = () => {
         transition={{ duration: 0.5 }}
         className="flex flex-col items-start gap-4"
       >
-        <div>
-          <p className="p-2 text-4xl font-bold text-[#3B5998]">CheatCode</p>
+        <div className="pl-2">
+          <p className="text-4xl font-bold text-[#3B5998]">CheatCode</p>
         </div>
         <div className="">
           <p className="text-md font-medium text-gray-700">
@@ -24,7 +24,7 @@ const LandingPage = () => {
             Get expert advice, personalised feedbacks and much more
           </p>
         </div>
-        <div className="pt-16 flex flex-row gap-2">
+        <div className="pl-2 pt-16 flex flex-row gap-2">
           <Link href={'https://github.com/BeNikk/CheatCode'}>
             <Button className="pl-2" variant={'outline'}>
               Give me a Star
